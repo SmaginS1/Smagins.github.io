@@ -7,41 +7,40 @@
 <style>
 body {
     margin: 0;
-    background-color: black;
+    background: black;
     color: white;
     font-family: Arial, sans-serif;
 }
 
-
+/* Заголовок */
 h1 {
     text-align: center;
     margin-top: 40px;
     font-size: 48px;
     color: #c77dff;
-    text-shadow:
-        0 0 5px #c77dff,
-        0 0 10px #9d4edd,
-        0 0 20px #7b2cbf;
+    text-shadow: 0 0 5px #c77dff,
+                 0 0 10px #9d4edd,
+                 0 0 20px #7b2cbf;
 }
 
+/* Колонки */
 .container {
     display: flex;
     justify-content: space-between;
-    margin-top: 100px;
-    padding: 0 80px;
+    padding: 0 100px;
+    margin-top: 120px;
     font-size: 24px;
 }
 
-.typing {
-    border-right: 2px solid white;
-    white-space: nowrap;
-    overflow: hidden;
-    width: 0;
-    animation: blinkCursor 0.7s infinite;
+/* Курсор */
+.cursor::after {
+    content: "|";
+    margin-left: 5px;
+    animation: blink 0.7s infinite;
 }
 
-@keyframes blinkCursor {
-    50% { border-color: transparent; }
+@keyframes blink {
+    50% { opacity: 0; }
 }
 </style>
 </head>
@@ -51,22 +50,18 @@ h1 {
 <h1>WELKOM.TO.WEB.SITE</h1>
 
 <div class="container">
-    <div>
-        <p id="left" class="typing"></p>
-    </div>
-
-    <div>
-        <p id="right" class="typing"></p>
-    </div>
+    <div id="left" class="cursor"></div>
+    <div id="right" class="cursor"></div>
 </div>
 
 <script>
 function typeWriter(elementId, text, speed) {
     let i = 0;
+    const el = document.getElementById(elementId);
+
     function typing() {
         if (i < text.length) {
-            document.getElementById(elementId).innerHTML +=
-                text.charAt(i) === "\n" ? "<br>" : text.charAt(i);
+            el.innerHTML += text[i] === "\n" ? "<br>" : text[i];
             i++;
             setTimeout(typing, speed);
         }
@@ -74,10 +69,9 @@ function typeWriter(elementId, text, speed) {
     typing();
 }
 
-typeWriter("left",  "СТРОКА 1\nСТРОКА 2\nСТРОКА 3", 80);
-typeWriter("right", "СТРОКА 1\nСТРОКА 2\nСТРОКА 3", 80);
+typeWriter("left",  "СТРОКА 1\nСТРОКА 2\nСТРОКА 3", 60);
+typeWriter("right", "СТРОКА 1\nСТРОКА 2\nСТРОКА 3", 60);
 </script>
 
 </body>
 </html>
-
