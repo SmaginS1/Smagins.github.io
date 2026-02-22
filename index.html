@@ -13,35 +13,50 @@
     }
     
 body { 
-    background-color: black; 
+    background-color: black;
     color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center; 
-    flex-direction: colun;
-    height: 100vh;
     margin: 0;
+    font-family: Arial, sans-serif;
     text-align: center;
-    font-family: Arial, sans-serif; 
-    } .blink { 
-           color: #00ff00;
+}
+
+.blink {
+    color: #00ff00;
+}
+
+.columns {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    padding: 0 80px;
+}
+
+.left, .right {
+    width: 200px;
+    text-align: left;
+  
 }
 </style>
 </head>
     
 <body>
-<h1 class="blink"> WELKOM.TO.WEB.SITE</h1>
-<h2> подзаголовок </h2>   
-    <p>СТРОКА 1 <br>
-       СТРОКА 2 <br>
-       СТРОКА 3
-    </p>
-<p> СТРОКА 1 <br>
-    СТРОКА 2 <br>
-    СТРОКА 3
-</p>
+    
+    <h1 class="blink">WELKOM.TO.WEB.SITE</h1>
+    <h2>Подзаголовок</h2>
+
+    <div class="columns">
+        <div class="left">
+            <p>СТРОКА 1<br>СТРОКА 2<br>СТРОКА 3</p>
+        </div>
+
+        <div class="right">
+            <p>СТРОКА 1<br>СТРОКА 2<br>СТРОКА 3</p>
+        </div>
+    </div>
+
 </body>
 </html>
+
 
 
 
