@@ -2,153 +2,132 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Cyberpunk UI</title>
+<title>HUD Interface</title>
 
 <style>
 body {
     margin: 0;
-    background: radial-gradient(circle at center, #070010, #000000);
+    background: black;
     color: white;
-    font-family: Consolas, monospace;
+    font-family: Arial, sans-serif;
     overflow: hidden;
 }
 
-/* Скан-линии */
-body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background: repeating-linear-gradient(
-        to bottom,
-        rgba(255,255,255,0.03),
-        rgba(255,255,255,0.03) 1px,
-        transparent 1px,
-        transparent 3px
-    );
-    pointer-events: none;
-}
-
-/* Заголовок */
-h1 {
-    text-align: center;
-    margin-top: 40px;
-    font-size: 56px;
-    letter-spacing: 4px;
-    color: #d0a2ff;
-    position: relative;
-    text-shadow:
-        0 0 5px #d0a2ff,
-        0 0 15px #9d4edd,
-        0 0 30px #7b2cbf;
-    animation: glow 2s ease-in-out infinite alternate;
-}
-
-/* Glitch эффект */
-h1::before,
-h1::after {
-    content: "WELKOM.TO.WEB.SITE";
+/* Центр */
+.center {
     position: absolute;
-    left: 0;
-    right: 0;
-    opacity: 0.7;
+    top: 8%;
+    width: 100%;
+    text-align: center;
+    font-size: 42px;
+    letter-spacing: 4px;
+    color: #c77dff;
+    text-shadow:
+        0 0 5px #c77dff,
+        0 0 15px #9d4edd,
+        0 0 25px #7b2cbf;
 }
 
-h1::before {
-    color: #ff00c8;
-    transform: translate(-2px, 0);
-    animation: glitch 2s infinite linear alternate-reverse;
+/* Фото */
+.photo {
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 340px;
+    opacity: 0;
+    transition: 1.5s;
+    filter: brightness(0.9) contrast(1.1);
+    box-shadow:
+        0 0 15px rgba(199,125,255,0.25),
+        0 0 40px rgba(123,44,191,0.15);
 }
 
-h1::after {
-    color: #00f0ff;
-    transform: translate(2px, 0);
-    animation: glitch 1.5s infinite linear alternate-reverse;
-}
-
-@keyframes glitch {
-    0%  { transform: translate(2px, 0); }
-    20% { transform: translate(-2px, 1px); }
-    40% { transform: translate(-1px, -1px); }
-    60% { transform: translate(1px, 1px); }
-    80% { transform: translate(-1px, 0); }
-    100%{ transform: translate(2px, -1px); }
-}
-
-@keyframes glow {
-    from { text-shadow: 0 0 10px #9d4edd, 0 0 20px #7b2cbf; }
-    to   { text-shadow: 0 0 20px #d0a2ff, 0 0 40px #9d4edd; }
-}
-
-/* Контейнер */
-.container {
-    display: flex;
-    justify-content: space-between;
-    padding: 0 140px;
-    margin-top: 160px;
+/* Боковые панели */
+.side {
+    position: absolute;
+    top: 35%;
     font-size: 22px;
+    line-height: 32px;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.85);
 }
 
-/* Колонки */
-.column {
-    width: 320px;
-    line-height: 1.7;
-    color: #e7c6ff;
-    text-shadow: 0 0 8px rgba(208, 162, 255, 0.35);
-}
+.left  { left: 60px; }
+.right { right: 60px; }
 
-/* Курсор */
-.cursor::after {
-    content: "▋";
-    margin-left: 8px;
-    color: #d0a2ff;
+/* Курсор печати */
+.cursor {
+    display: inline-block;
+    width: 10px;
     animation: blink 1s infinite;
 }
 
 @keyframes blink {
     50% { opacity: 0; }
 }
+
+/* Шум терминала */
+.noise {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+    opacity: 0.07;
+}
 </style>
 </head>
 
 <body>
 
-<h1>WELKOM.TO.WEB.SITE</h1>
+<div class="noise"></div>
 
-<div class="container">
-    <div id="left" class="column cursor"></div>
-    <div id="right" class="column cursor"></div>
+<div class="center">
+    <span id="title"></span><span class="cursor">|</span>
+</div>
+
+<img src="photo.jpg" class="photo" id="photo">
+
+<div class="side left">
+    <div id="left1"></div>
+    <div id="left2"></div>
+    <div id="left3"></div>
+</div>
+
+<div class="side right">
+    <div id="right1"></div>
+    <div id="right2"></div>
+    <div id="right3"></div>
 </div>
 
 <script>
-function typeWriter(id, text, speed, delay = 0) {
-    const el = document.getElementById(id);
+function typeText(element, text, speed, callback) {
     let i = 0;
-
-    setTimeout(() => {
-        function typing() {
-            if (i < text.length) {
-                el.innerHTML += text[i] === "\n" ? "<br>" : text[i];
-                i++;
-                setTimeout(typing, speed);
-            }
-        }
-        typing();
-    }, delay);
+    function typing() {
+        if (i < text.length) {
+            element.innerHTML += text.charAt(i);
+            i++;
+            setTimeout(typing, speed);
+        } else if (callback) callback();
+    }
+    typing();
 }
 
-typeWriter("left",
-`[ SYSTEM ONLINE ]
-boot sequence ........ OK
-neural link .......... OK
-identity ............. VERIFIED`,
-35);
+/* Боковые быстрее */
+typeText(left1,  "СТРОКА 1", 35);
+typeText(left2,  "СТРОКА 2", 35);
+typeText(left3,  "СТРОКА 3", 35);
 
-typeWriter("right",
-`[ NETWORK STATUS ]
-signal strength ...... STABLE
-firewall ............. BYPASSED
-protocol ............. ACTIVE`,
-35, 900);
+typeText(right1, "СТРОКА 1", 35);
+typeText(right2, "СТРОКА 2", 35);
+typeText(right3, "СТРОКА 3", 35);
+
+/* Центр медленнее + фото */
+setTimeout(() => {
+    typeText(title, "WELKOM.TO.WEB.SITE", 90, () => {
+        document.getElementById("photo").style.opacity = 1;
+    });
+}, 400);
 </script>
 
 </body>
