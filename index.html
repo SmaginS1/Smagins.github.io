@@ -1,177 +1,29 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="UTF-8">
-<title>АРХИВ: ЛИЧНОГО ДОСЬЕ</title>
-
-<style>
-body {
-    margin: 0;
-    background: radial-gradient(circle at top, #0b0f2a, #05070f);
-    font-family: Arial, sans-serif;
-    color: #8be9ff;
-    overflow: hidden;
+innerHTML += "<br><span class='neon'>ДОСТУП РАЗРЕШЕН</span>";
+        setTimeout(() => {
+            document.getElementById("login").classList.add("hidden");
+            document.getElementById("archive").classList.remove("hidden");
+            loadDossier(0);
+        }, 800);
+    } else {
+        document.getElementById("loginText").innerHTML += "<br>ОШИБКА ДОСТУПА";
+    }
 }
-
-/* Заголовок */
-.header {
-    text-align: center;
-    font-size: 32px;
-    letter-spacing: 3px;
-    margin-top: 30px;
-    color: #d580ff;
-    text-shadow: 0 0 10px #b84dff, 0 0 20px #6a00ff;
-}
-
-/* Панель */
-.panel {
-    width: 90%;
-    height: 70vh;
-    margin: 30px auto;
-    border: 1px solid rgba(180, 80, 255, 0.3);
-    box-shadow: 0 0 25px rgba(140, 0, 255, 0.2);
-    background: rgba(10, 15, 35, 0.6);
-    padding: 20px;
-    position: relative;
-}
-
-/* Вкладки */
-.tabs {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.tab {
-    padding: 8px 15px;
-    border: 1px solid rgba(200, 100, 255, 0.3);
-    cursor: pointer;
-    color: #d580ff;
-    transition: 0.2s;
-}
-
-.tab:hover {
-    background: rgba(150, 0, 255, 0.2);
-    box-shadow: 0 0 10px rgba(180, 0, 255, 0.5);
-}
-
-.tab.active {
-    background: rgba(150, 0, 255, 0.35);
-    box-shadow: 0 0 15px rgba(200, 0, 255, 0.8);
-}
-
-/* Контент */
-.content {
-    display: flex;
-    gap: 30px;
-}
-
-.photo {
-    width: 260px;
-    height: 320px;
-    border: 1px solid rgba(180, 0, 255, 0.3);
-    box-shadow: 0 0 20px rgba(180, 0, 255, 0.4);
-    background-size: cover;
-    background-position: center;
-}
-
-.info {
-    flex: 1;
-    font-size: 18px;
-    line-height: 1.6;
-}
-
-/* Загрузка */
-.loader {
-    position: absolute;
-    bottom: 15px;
-    left: 20px;
-    font-size: 14px;
-    color: #d580ff;
-    opacity: 0.7;
-}
-</style>
-</head>
-
-<body>
-
-<div class="header">АРХИВ: ЛИЧНОГО ДОСЬЕ</div>
-
-<div class="panel">
-
-    <div class="tabs">
-        <div class="tab active" onclick="loadDossier(0)">ДОСЬЕ #001</div>
-        <div class="tab" onclick="loadDossier(1)">ДОСЬЕ #002</div>
-        <div class="tab" onclick="loadDossier(2)">ДОСЬЕ #003</div>
-    </div>
-
-    <div class="content">
-        <div id="photo" class="photo"></div>
-        <div id="info" class="info"></div>
-    </div>
-
-    <div id="loader" class="loader">СИСТЕМА ГОТОВА</div>
-
-</div>
-
-<script>
-const dossiers = [
-{
-    name: "Имя: ВИКТОР КАРЕЛИН",
-    city: "Город: Новосибирск",
-    status: "Статус: Наблюдение",
-    info: "Информация:\n- Повышенная сетевая активность\n- Частая смена устройств\n- Контакты неизвестного происхождения",
-    photo: "https://images.unsplash.com/photo-1527980965255-d3b416303d12"
-},
-{
-    name: "Имя: АЛИНА ВОРОНЦОВА",
-    city: "Город: Санкт-Петербург",
-    status: "Статус: Анализ",
-    info: "Информация:\n- Замечена в закрытых сообществах\n- Использует VPN узлы\n- Поведенческие аномалии",
-    photo: "https://images.unsplash.com/photo-1494790108377-be9c29b29330"
-},
-{
-    name: "Имя: ДМИТРИЙ СОКОЛОВ",
-    city: "Город: Казань",
-    status: "Статус: Доступ ограничен",
-    info: "Информация:\n- Данные частично повреждены\n- Источник не подтвержден\n- Требуется дополнительная проверка",
-    photo: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e"
-}
-];
 
 function loadDossier(index) {
-
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.tab')[index].classList.add('active');
 
-    const loader = document.getElementById("loader");
-    const info = document.getElementById("info");
-    const photo = document.getElementById("photo");
+    const d = dossiers[index];
 
-    info.innerHTML = "";
-    photo.style.backgroundImage = "";
+    document.getElementById("info").innerHTML = `
+        ${d.name}<br>
+        ${d.city}<br>
+        ${d.status}<br><br>
+        ${d.info.replace(/\n/g, "<br>")}
+    `;
 
-    loader.innerText = "СОБИРАЮ ДАННЫЕ...";
-    
-    setTimeout(() => {
-        loader.innerText = "ЗАГРУЗКА ПРОФИЛЯ...";
-    }, 500);
-
-    setTimeout(() => {
-        const d = dossiers[index];
-        info.innerHTML = `
-            <div>${d.name}</div>
-            <div>${d.city}</div>
-            <div>${d.status}</div>
-            <br>
-            <div>${d.info.replace(/\n/g, "<br>")}</div>
-        `;
-        photo.style.backgroundImage = url(${d.photo});
-        loader.innerText = "ДАННЫЕ ЗАГРУЖЕНЫ";
-    }, 1000);
+    document.getElementById("photo").style.backgroundImage = url(${d.photo});
 }
-
-loadDossier(0);
 </script>
 
 </body>
