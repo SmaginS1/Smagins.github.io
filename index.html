@@ -2,157 +2,177 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Cyber HUD</title>
+<title>АРХИВ: ЛИЧНОГО ДОСЬЕ</title>
 
 <style>
 body {
     margin: 0;
-    background: black;
-    color: white;
+    background: radial-gradient(circle at top, #0b0f2a, #05070f);
     font-family: Arial, sans-serif;
+    color: #8be9ff;
     overflow: hidden;
 }
 
 /* Заголовок */
-.center-title {
-    position: absolute;
-    top: 6%;
-    width: 100%;
+.header {
     text-align: center;
-    font-size: 40px;
-    letter-spacing: 4px;
-    color: #c77dff;
-    text-shadow:
-        0 0 5px #c77dff,
-        0 0 15px #9d4edd,
-        0 0 25px #7b2cbf;
+    font-size: 32px;
+    letter-spacing: 3px;
+    margin-top: 30px;
+    color: #d580ff;
+    text-shadow: 0 0 10px #b84dff, 0 0 20px #6a00ff;
 }
 
-/* Центральная панель */
-.main-panel {
-    position: absolute;
-    top: 14%;
-    left: 18%;
-    width: 64%;
-    height: 70%;
-    border: 1px solid rgba(120,120,255,0.15);
-    background: rgba(0,0,0,0.25);
-    padding: 30px;
-    box-sizing: border-box;
-    text-align: center;        /* ВАЖНО: центрируем всё */
+/* Панель */
+.panel {
+    width: 90%;
+    height: 70vh;
+    margin: 30px auto;
+    border: 1px solid rgba(180, 80, 255, 0.3);
+    box-shadow: 0 0 25px rgba(140, 0, 255, 0.2);
+    background: rgba(10, 15, 35, 0.6);
+    padding: 20px;
+    position: relative;
 }
 
-/* Текст внутри панели */
-.main-text {
-    font-size: 26px;           /* <<< КРУПНЕЕ */
-    line-height: 36px;
-    letter-spacing: 2px;
-    color: rgba(180,220,255,0.9);
-    text-shadow: 0 0 8px rgba(80,120,255,0.35);
+/* Вкладки */
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
 }
 
+.tab {
+    padding: 8px 15px;
+    border: 1px solid rgba(200, 100, 255, 0.3);
+    cursor: pointer;
+    color: #d580ff;
+    transition: 0.2s;
+}
 
+.tab:hover {
+    background: rgba(150, 0, 255, 0.2);
+    box-shadow: 0 0 10px rgba(180, 0, 255, 0.5);
+}
 
-/* Боковые панели */
-.side {
-    position: absolute;
-    top: 18%;
-    width: 240px;
+.tab.active {
+    background: rgba(150, 0, 255, 0.35);
+    box-shadow: 0 0 15px rgba(200, 0, 255, 0.8);
+}
+
+/* Контент */
+.content {
+    display: flex;
+    gap: 30px;
+}
+
+.photo {
+    width: 260px;
+    height: 320px;
+    border: 1px solid rgba(180, 0, 255, 0.3);
+    box-shadow: 0 0 20px rgba(180, 0, 255, 0.4);
+    background-size: cover;
+    background-position: center;
+}
+
+.info {
+    flex: 1;
     font-size: 18px;
-    line-height: 28px;
-    letter-spacing: 1px;
-    color: rgba(180,210,255,0.85);
+    line-height: 1.6;
 }
 
-.left  { left: 25px; }
-.right { right: 25px; }
-
-.noise {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    background-image: url("https://grainy-gradients.vercel.app/noise.svg");
-    opacity: 0.06;
-}
-
-.cursor {
-    display: inline-block;
-    animation: blink 1s infinite;
-}
-
-@keyframes blink {
-    50% { opacity: 0; }
+/* Загрузка */
+.loader {
+    position: absolute;
+    bottom: 15px;
+    left: 20px;
+    font-size: 14px;
+    color: #d580ff;
+    opacity: 0.7;
 }
 </style>
 </head>
 
 <body>
 
-<div class="noise"></div>
+<div class="header">АРХИВ: ЛИЧНОГО ДОСЬЕ</div>
 
-<div class="center-title">
-    WELKOM.TO.WEB.SITE
-</div>
+<div class="panel">
 
-<div class="side left">
-[ СИСТЕМА ]<br>
-загрузка ........ УСПЕШНО<br>
-напряжение ядра ....<br>
-МИНИМАЛЬНО<br>
-нейролинк ..........<br>
-ОТСУТСТВУЕТ<br>
-целостность памяти .. 73%
-</div>
+    <div class="tabs">
+        <div class="tab active" onclick="loadDossier(0)">ДОСЬЕ #001</div>
+        <div class="tab" onclick="loadDossier(1)">ДОСЬЕ #002</div>
+        <div class="tab" onclick="loadDossier(2)">ДОСЬЕ #003</div>
+    </div>
 
-<div class="side right">
-[ СЕТЬ ]<br>
-сигнал ............. 56%<br>
-задержка ........... НИЗКАЯ<br>
-фаервол ............ ОТКЛЮЧЕН<br>
-обнаружение трасс ... НЕ НАЙДЕНО<br>
-обнаружение прав доступа
-</div>
+    <div class="content">
+        <div id="photo" class="photo"></div>
+        <div id="info" class="info"></div>
+    </div>
 
-<div class="main-panel">
-
-    <div class="main-text" id="mainText"></div>
-
-    <img src="photo.jpg" class="photo" id="photo">
+    <div id="loader" class="loader">СИСТЕМА ГОТОВА</div>
 
 </div>
 
 <script>
-function typeText(text, speed, callback) {
-    let i = 0;
-    const el = document.getElementById("mainText");
+const dossiers = [
+{
+    name: "Имя: ВИКТОР КАРЕЛИН",
+    city: "Город: Новосибирск",
+    status: "Статус: Наблюдение",
+    info: "Информация:\n- Повышенная сетевая активность\n- Частая смена устройств\n- Контакты неизвестного происхождения",
+    photo: "https://images.unsplash.com/photo-1527980965255-d3b416303d12"
+},
+{
+    name: "Имя: АЛИНА ВОРОНЦОВА",
+    city: "Город: Санкт-Петербург",
+    status: "Статус: Анализ",
+    info: "Информация:\n- Замечена в закрытых сообществах\n- Использует VPN узлы\n- Поведенческие аномалии",
+    photo: "https://images.unsplash.com/photo-1494790108377-be9c29b29330"
+},
+{
+    name: "Имя: ДМИТРИЙ СОКОЛОВ",
+    city: "Город: Казань",
+    status: "Статус: Доступ ограничен",
+    info: "Информация:\n- Данные частично повреждены\n- Источник не подтвержден\n- Требуется дополнительная проверка",
+    photo: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e"
+}
+];
 
-    function typing() {
-        if (i < text.length) {
-            el.innerHTML += text.charAt(i);
-            i++;
-            setTimeout(typing, speed);
-        } else if (callback) callback();
-    }
-    typing();
+function loadDossier(index) {
+
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab')[index].classList.add('active');
+
+    const loader = document.getElementById("loader");
+    const info = document.getElementById("info");
+    const photo = document.getElementById("photo");
+
+    info.innerHTML = "";
+    photo.style.backgroundImage = "";
+
+    loader.innerText = "СОБИРАЮ ДАННЫЕ...";
+    
+    setTimeout(() => {
+        loader.innerText = "ЗАГРУЗКА ПРОФИЛЯ...";
+    }, 500);
+
+    setTimeout(() => {
+        const d = dossiers[index];
+        info.innerHTML = `
+            <div>${d.name}</div>
+            <div>${d.city}</div>
+            <div>${d.status}</div>
+            <br>
+            <div>${d.info.replace(/\n/g, "<br>")}</div>
+        `;
+        photo.style.backgroundImage = url(${d.photo});
+        loader.innerText = "ДАННЫЕ ЗАГРУЖЕНЫ";
+    }, 1000);
 }
 
-const content =
-"> initializing interface...\n" +
-"> loading modules...\n" +
-"> syncing protocols...\n\n" +
-"ПЧЕЛКИНА ЕЛИЗАВЕТА АЛЕКСАНДРОВНА\n" +
-"РЕСП. КРЫМ Г. АЛУШТА УЛ. ГОРЬКОГО\n\n" +
-"ГОД 2007 МЕС 06 ЧИС 23\n" +
-"НЕОКОНЧЕННОЕ СРЕДНЕЕ ОБРАЗОВАНИЕ\n" +
-"КУЛИНАРНЫЙ ТЕХНИКУМ Г. АЛУШТА\n" +
-"СУДИМОСТЕЙ НЕТ";
-
-typeText(content, 35, () => {
-    document.getElementById("photo").style.opacity = 1;
-});
+loadDossier(0);
 </script>
 
 </body>
 </html>
-
-
