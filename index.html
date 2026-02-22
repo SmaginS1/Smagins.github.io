@@ -186,13 +186,17 @@ typeLogin();
 document.getElementById("password").addEventListener("keydown", e => {
     if (e.key === "Enter") checkPassword();
 });
-
+<script>
 function checkPassword() {
     const value = document.getElementById("password").value;
 
     if (value === "ARCHIVE") {
-        document.getElementById("loginText").
-                }
+        document.queryselector(".login-screen").style.display = "none";
+        document.queryselector(".desktop").style.display = "block";
+    } else { 
+        alert("ДОСТУП ЗАПРЕЩЕН");
+    
                 </script>
 </body>
 </html>
+
