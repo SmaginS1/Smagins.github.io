@@ -2,132 +2,172 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>HUD Interface</title>
+<title>Cyber HUD</title>
 
 <style>
-body {
+html, body {
     margin: 0;
-    background: black;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, #05010a, #000000);
     color: white;
-    font-family: Arial, sans-serif;
+    font-family: Consolas, monospace;
     overflow: hidden;
 }
 
-/* Центр */
+/* Скан-линии */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.04),
+        rgba(255,255,255,0.04) 1px,
+        transparent 1px,
+        transparent 4px
+    );
+    pointer-events: none;
+}
+
+/* Терминальный шум */
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+    opacity: 0.15;
+    pointer-events: none;
+}
+
+/* Заголовок */
+h1 {
+    text-align: center;
+    margin-top: 35px;
+    font-size: 54px;
+    letter-spacing: 4px;
+    color: #d0a2ff;
+    text-shadow:
+        0 0 6px #d0a2ff,
+        0 0 18px #9d4edd,
+        0 0 40px #7b2cbf;
+    animation: glow 2s infinite alternate;
+}
+
+@keyframes glow {
+    from { text-shadow: 0 0 10px #7b2cbf, 0 0 20px #9d4edd; }
+    to   { text-shadow: 0 0 20px #d0a2ff, 0 0 50px #9d4edd; }
+}
+
+/* HUD панели */
+.hud {
+    position: absolute;
+    top: 120px;
+    bottom: 40px;
+    width: 340px;
+    padding: 20px;
+    border: 1px solid rgba(208,162,255,0.25);
+    box-shadow: 0 0 25px rgba(157,78,221,0.25);
+    background: rgba(15, 5, 25, 0.55);
+    backdrop-filter: blur(4px);
+    color: #e7c6ff;
+    font-size: 20px;
+    line-height: 1.6;
+}
+
+.left  { left: 40px; }
+.right { right: 40px; }
+
+/* Центральная зона */
 .center {
     position: absolute;
-    top: 8%;
-    width: 100%;
-    text-align: center;
-    font-size: 42px;
-    letter-spacing: 4px;
-    color: #c77dff;
-    text-shadow:
-        0 0 5px #c77dff,
-        0 0 15px #9d4edd,
-        0 0 25px #7b2cbf;
-}
-
-/* Фото */
-.photo {
-    position: absolute;
-    top: 25%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 340px;
-    opacity: 0;
-    transition: 1.5s;
-    filter: brightness(0.9) contrast(1.1);
-    box-shadow:
-        0 0 15px rgba(199,125,255,0.25),
-        0 0 40px rgba(123,44,191,0.15);
-}
-
-/* Боковые панели */
-.side {
-    position: absolute;
-    top: 35%;
+    top: 140px;
+    left: 420px;
+    right: 420px;
+    bottom: 60px;
+    border: 1px solid rgba(208,162,255,0.12);
+    box-shadow: inset 0 0 30px rgba(123,44,191,0.2);
+    padding: 30px;
     font-size: 22px;
-    line-height: 32px;
-    letter-spacing: 2px;
-    color: rgba(255,255,255,0.85);
+    color: #d0a2ff;
 }
 
-.left  { left: 60px; }
-.right { right: 60px; }
-
-/* Курсор печати */
-.cursor {
-    display: inline-block;
-    width: 10px;
+/* Курсор */
+.cursor::after {
+    content: "▋";
+    margin-left: 6px;
     animation: blink 1s infinite;
+    color: #d0a2ff;
 }
 
 @keyframes blink {
     50% { opacity: 0; }
-}
-
-/* Шум терминала */
-.noise {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    background-image: url("https://grainy-gradients.vercel.app/noise.svg");
-    opacity: 0.07;
 }
 </style>
 </head>
 
 <body>
 
-<div class="noise"></div>
+<h1>WELKOM.TO.WEB.SITE</h1>
 
-<div class="center">
-    <span id="title"></span><span class="cursor">|</span>
-</div>
+<div class="hud left cursor" id="leftPanel"></div>
+<div class="hud right cursor" id="rightPanel"></div>
 
-<img src="photo.jpg" class="photo" id="photo">
-
-<div class="side left">
-    <div id="left1"></div>
-    <div id="left2"></div>
-    <div id="left3"></div>
-</div>
-
-<div class="side right">
-    <div id="right1"></div>
-    <div id="right2"></div>
-    <div id="right3"></div>
-</div>
+<div class="center cursor" id="mainPanel"></div>
 
 <script>
-function typeText(element, text, speed, callback) {
+function typeWriter(id, text, speed, delay = 0) {
+    const el = document.getElementById(id);
     let i = 0;
-    function typing() {
-        if (i < text.length) {
-            element.innerHTML += text.charAt(i);
-            i++;
-            setTimeout(typing, speed);
-        } else if (callback) callback();
-    }
-    typing();
+
+    setTimeout(() => {
+        function typing() {
+            if (i < text.length) {
+                el.innerHTML += text[i] === "\n" ? "<br>" : text[i];
+                i++;
+                setTimeout(typing, speed);
+            }
+        }
+        typing();
+    }, delay);
 }
 
-/* Боковые быстрее */
-typeText(left1,  "СТРОКА 1", 35);
-typeText(left2,  "СТРОКА 2", 35);
-typeText(left3,  "СТРОКА 3", 35);
+typeWriter("leftPanel",
+`[ СИСТЕМА ]
+загрузка ............. OK
+напряжение ядра ...... СТАБИЛЬНО
+нейролинк ............ АКТИВЕН
+целостность памяти ... OK
 
-typeText(right1, "СТРОКА 1", 35);
-typeText(right2, "СТРОКА 2", 35);
-typeText(right3, "СТРОКА 3", 35);
+[ ПОЛЬЗОВАТЕЛЬ ]
+идентификация ........ ПОДТВЕРЖДЕНА
+статус ............... В СЕТИ`,
+25);
 
-/* Центр медленнее + фото */
-setTimeout(() => {
-    typeText(title, "WELKOM.TO.WEB.SITE", 90, () => {
-        document.getElementById("photo").style.opacity = 1;
-    });
-}, 400);
+typeWriter("rightPanel",
+`[ СЕТЬ ]
+сигнал ............... 98%
+задержка ............. НИЗКАЯ
+фаервол .............. ОТКЛЮЧЕН
+обнаружение трасс .... НЕ НАЙДЕНО
+Здарова голова ) шо ты .... думала не смогу )
+
+[ ДОСТУП ]
+root-права ........... ПОЛУЧЕНЫ`,
+25, 700);
+
+typeWriter("mainPanel",
+`> initializing interface...
+> loading modules...
+> syncing protocols...
+
+WELCOME, USER
+
+This environment simulates a secure
+cybernetic control interface.
+
+All actions are monitored.`,
+30, 400);
 </script>
 
 </body>
